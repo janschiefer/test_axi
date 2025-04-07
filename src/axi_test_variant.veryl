@@ -1,0 +1,6 @@
+module axi_test_variant () {
+
+    inst v: axi_if::<axi4_pkg::<32, 4, 1, 8, 8, 8, 8, 8>>;
+
+    inst u: axi_if::<axi3_pkg::<32, 4, 1>>;
+}

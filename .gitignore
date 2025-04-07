@@ -1,0 +1,7 @@
+.build/
+.dependencies/
+output/
+*.log
+*.lock
+*.json
+

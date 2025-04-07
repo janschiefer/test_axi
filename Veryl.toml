@@ -1,0 +1,8 @@
+[project]
+name = "test_axi"
+version = "0.1.0"
+
+[build]
+target = {type = "directory", path = "output"}
+omit_project_prefix = true
+
