@@ -24,10 +24,6 @@ pub interface axi4_if::<ADDR_W: const, DATA_W_BYTES: const, ID_W: const, AWUSER_
     type aruser_t     = logic<ARUSER_LENGTH>         ;
     type ruser_t      = logic<RUSER_LENGTH>          ;
 
-    ///Bus clock and reset
-    var ACLK   : clock_posedge ;
-    var ARESETN: reset_sync_low;
-
     ///Write address channel
     var AWVALID : logic          ;
     var AWREADY : logic          ;
@@ -83,8 +79,6 @@ pub interface axi4_if::<ADDR_W: const, DATA_W_BYTES: const, ID_W: const, AWUSER_
     var RUSER : ruser_t   ; //Only AXI4
 
     modport master {
-        ACLK   : input,
-        ARESETN: input,
 
         AWVALID : output,
         AWREADY : input ,
@@ -138,25 +132,10 @@ pub interface axi4_if::<ADDR_W: const, DATA_W_BYTES: const, ID_W: const, AWUSER_
     }
 
     modport slave {
-        ACLK   : input,
-        ARESETN: input,
 
         ..converse(master)
     }
 
-    modport master_interconnect {
-        ACLK   : output,
-        ARESETN: output,
-
-        ..same(master)
-    }
-
-    modport slave_interconnect {
-        ACLK   : output,
-        ARESETN: output,
-
-        ..same(slave)
-    }
     modport monitor {
 
         ..input
@@ -178,10 +157,6 @@ pub interface axi3_if::<ADDR_W: const, DATA_W_BYTES: const, ID_W: const> {
     type num_bursts_t = logic<NUM_BURSTS_LEN>        ;
     type lock_t       = logic<LOCK_LEN>              ;
     type id_t         = logic<ID_LENGTH>             ;
-
-    ///Bus clock and reset
-    var ACLK   : clock_posedge ;
-    var ARESETN: reset_sync_low;
 
     ///Write address channel
     var AWVALID: logic          ;
@@ -230,9 +205,6 @@ pub interface axi3_if::<ADDR_W: const, DATA_W_BYTES: const, ID_W: const> {
     var RID   : id_t     ;
 
     modport master {
-        ACLK   : input,
-        ARESETN: input,
-
         AWVALID: output,
         AWREADY: input ,
         AWADDR : output,
@@ -277,25 +249,10 @@ pub interface axi3_if::<ADDR_W: const, DATA_W_BYTES: const, ID_W: const> {
     }
 
     modport slave {
-        ACLK   : input,
-        ARESETN: input,
 
         ..converse(master)
     }
 
-    modport master_interconnect {
-        ACLK   : output,
-        ARESETN: output,
-
-        ..same(master)
-    }
-
-    modport slave_interconnect {
-        ACLK   : output,
-        ARESETN: output,
-
-        ..same(slave)
-    }
     modport monitor {
 
         ..input

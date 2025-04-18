@@ -85,10 +85,6 @@ pub interface axi_if::<PKG: axi_prototype> {
 
     import PKG::*;
 
-    ///Bus clock and reset
-    var ACLK   : clock_posedge ;
-    var ARESETN: reset_sync_low;
-
     ///Write address channel
     var AWVALID : logic          ;
     var AWREADY : logic          ;
@@ -145,8 +141,6 @@ pub interface axi_if::<PKG: axi_prototype> {
     var RUSER : ruser_t   ; //Only AXI4
 
     modport master {
-        ACLK   : input,
-        ARESETN: input,
 
         AWVALID : output,
         AWREADY : input ,
@@ -201,25 +195,10 @@ pub interface axi_if::<PKG: axi_prototype> {
     }
 
     modport slave {
-        ACLK   : input,
-        ARESETN: input,
 
         ..converse(master)
     }
 
-    modport master_interconnect {
-        ACLK   : output,
-        ARESETN: output,
-
-        ..same(master)
-    }
-
-    modport slave_interconnect {
-        ACLK   : output,
-        ARESETN: output,
-
-        ..same(slave)
-    }
     modport monitor {
 
         ..input
