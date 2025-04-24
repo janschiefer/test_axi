@@ -324,7 +324,6 @@ pub interface axi3_if::<PKG: axi3_prototype> {
     }
 }
 
-// AXI3 / AXI4 bus interface
 pub interface axi4_lite_if::<PKG: axi4_lite_prototype> {
 
     import PKG::*;
