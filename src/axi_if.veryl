@@ -1,7 +1,4 @@
-//Variant of AXI interface using proto packages
-
 pub proto package axi4_prototype {
-    const AXI_VERSION     : u32;
     const ADDRESS_WIDTH   : u32;
     const DATA_WIDTH_BYTES: u32;
     const NUM_BURSTS_LEN  : u32;
@@ -28,7 +25,6 @@ pub proto package axi4_prototype {
 }
 
 pub proto package axi3_prototype {
-    const AXI_VERSION     : u32;
     const ADDRESS_WIDTH   : u32;
     const DATA_WIDTH_BYTES: u32;
     const NUM_BURSTS_LEN  : u32;
@@ -43,8 +39,15 @@ pub proto package axi3_prototype {
     type id_t        ;
 }
 
+pub proto package axi4_lite_prototype {
+    const ADDRESS_WIDTH   : u32;
+    const DATA_WIDTH_BYTES: u32;
+    type addr_t          ;
+    type data_t          ;
+    type strb_t          ;
+}
+
 pub package axi4_pkg::<ADDR_W: const, DATA_W_BYTES: const, ID_W: const, AWUSER_W: const, WUSER_W: const, BUSER_W: const, ARUSER_W: const, RUSER_W: const> for axi4_prototype {
-    const AXI_VERSION     : u32 = 4;
     const ADDRESS_WIDTH   : u32 = ADDR_W;
     const DATA_WIDTH_BYTES: u32 = DATA_W_BYTES;
     const NUM_BURSTS_LEN  : u32 = 8;
@@ -70,7 +73,6 @@ pub package axi4_pkg::<ADDR_W: const, DATA_W_BYTES: const, ID_W: const, AWUSER_W
 }
 
 pub package axi3_pkg::<ADDR_W: const, DATA_W_BYTES: const, ID_W: const> for axi3_prototype {
-    const AXI_VERSION     : u32 = 3;
     const ADDRESS_WIDTH   : u32 = ADDR_W;
     const DATA_WIDTH_BYTES: u32 = DATA_W_BYTES;
     const NUM_BURSTS_LEN  : u32 = 4;
@@ -85,113 +87,122 @@ pub package axi3_pkg::<ADDR_W: const, DATA_W_BYTES: const, ID_W: const> for axi3
     type id_t         = logic<ID_LENGTH>             ;
 }
 
+pub package axi4_lite_pkg::<ADDR_W: const, DATA_W_BYTES: const> for axi4_lite_prototype {
+    const ADDRESS_WIDTH   : u32 = ADDR_W;
+    const DATA_WIDTH_BYTES: u32 = DATA_W_BYTES;
+
+    type addr_t = logic<ADDRESS_WIDTH>         ;
+    type data_t = logic<(DATA_WIDTH_BYTES * 8)>;
+    type strb_t = logic<DATA_WIDTH_BYTES>      ;
+}
+
 pub interface axi4_if::<PKG: axi4_prototype> {
 
     import PKG::*;
 
-    ///Write address channel
-    var AWVALID : logic          ;
-    var AWREADY : logic          ;
-    var AWADDR  : addr_t         ;
-    var AWSIZE  : logic       <3>;
-    var AWBURST : logic       <2>;
-    var AWCACHE : logic       <4>;
-    var AWPROT  : logic       <3>;
-    var AWID    : id_t           ;
-    var AWLEN   : num_bursts_t   ; //AXI3: 4 bits, AXI4: 8 bits
-    var AWLOCK  : lock_t         ; //AXI3: 2 bits, AXI4: 1 bit
+    //Write address channel
+    var awvalid : logic          ;
+    var awready : logic          ;
+    var awaddr  : addr_t         ;
+    var awsize  : logic       <3>;
+    var awburst : logic       <2>;
+    var awcache : logic       <4>;
+    var awprot  : logic       <3>;
+    var awid    : id_t           ;
+    var awlen   : num_bursts_t   ; //AXI3: 4 bits, AXI4: 8 bits
+    var awlock  : lock_t         ; //AXI3: 2 bits, AXI4: 1 bit
     var AWQOS   : logic       <4>; //Only AXI4
     var AWREGION: logic       <4>; //Only AXI4
-    var AWUSER  : awuser_t       ; //Only AXI4
+    var Awuser  : awuser_t       ; //Only AXI4
 
-    ///Write data channel
-    var WVALID: logic  ;
-    var WREADY: logic  ;
+    //Write data channel
+    var wvalid: logic  ;
+    var wready: logic  ;
     var WLAST : logic  ;
-    var WDATA : data_t ;
-    var WSTRB : strb_t ;
-    var WUSER : wuser_t; //Only AXI4
+    var wdata : data_t ;
+    var wstrb : strb_t ;
+    var wuser : wuser_t; //Only AXI4
 
-    ///Write response channel
-    var BVALID: logic     ;
-    var BREADY: logic     ;
-    var BRESP : logic  <2>;
-    var BID   : id_t      ;
-    var BUSER : buser_t   ; //Only AXI4
+    //Write response channel
+    var bvalid: logic     ;
+    var bready: logic     ;
+    var bresp : logic  <2>;
+    var bid   : id_t      ;
+    var buser : buser_t   ; //Only AXI4
 
-    ///Read address channel
-    var ARVALID : logic          ;
-    var ARREADY : logic          ;
-    var ARADDR  : addr_t         ;
-    var ARSIZE  : logic       <3>;
-    var ARBURST : logic       <2>;
-    var ARCACHE : logic       <4>;
-    var ARPROT  : logic       <3>;
-    var ARID    : id_t           ;
-    var ARLEN   : num_bursts_t   ; //AXI3: 4 bits, AXI4: 8 bits
-    var ARLOCK  : lock_t         ; //AXI3: 2 bits, AXI4: 1 bit
-    var ARQOS   : logic       <4>; //Only AXI4
-    var ARREGION: logic       <4>; //Only AXI4
-    var ARUSER  : aruser_t       ; //Only AXI4
+    //Read address channel
+    var arvalid : logic          ;
+    var arready : logic          ;
+    var araddr  : addr_t         ;
+    var arsize  : logic       <3>;
+    var arburst : logic       <2>;
+    var arcache : logic       <4>;
+    var arprot  : logic       <3>;
+    var arid    : id_t           ;
+    var arlen   : num_bursts_t   ; //AXI3: 4 bits, AXI4: 8 bits
+    var arlock  : lock_t         ; //AXI3: 2 bits, AXI4: 1 bit
+    var arqos   : logic       <4>; //Only AXI4
+    var arregion: logic       <4>; //Only AXI4
+    var aruser  : aruser_t       ; //Only AXI4
 
-    ///Read data channel
-    var RVALID: logic     ;
-    var RREADY: logic     ;
-    var RLAST : logic     ;
-    var RDATA : data_t    ;
-    var RRESP : logic  <2>;
-    var RID   : id_t      ;
+    //Read data channel
+    var rvalid: logic     ;
+    var rready: logic     ;
+    var rlast : logic     ;
+    var rdata : data_t    ;
+    var rresp : logic  <2>;
+    var rid   : id_t      ;
     var RUSER : ruser_t   ; //Only AXI4
 
     modport master {
 
-        AWVALID : output,
-        AWREADY : input ,
-        AWADDR  : output,
-        AWSIZE  : output,
-        AWBURST : output,
-        AWCACHE : output,
-        AWPROT  : output,
-        AWID    : output,
-        AWLEN   : output,
-        AWLOCK  : output,
+        awvalid : output,
+        awready : input ,
+        awaddr  : output,
+        awsize  : output,
+        awburst : output,
+        awcache : output,
+        awprot  : output,
+        awid    : output,
+        awlen   : output,
+        awlock  : output,
         AWQOS   : output,
         AWREGION: output,
-        AWUSER  : output,
+        Awuser  : output,
 
-        WVALID: output,
-        WREADY: input ,
+        wvalid: output,
+        wready: input ,
         WLAST : output,
-        WDATA : output,
-        WSTRB : output,
-        WUSER : output,
+        wdata : output,
+        wstrb : output,
+        wuser : output,
 
-        BVALID: input ,
-        BREADY: output,
-        BRESP : input ,
-        BID   : input ,
-        BUSER : input ,
+        bvalid: input ,
+        bready: output,
+        bresp : input ,
+        bid   : input ,
+        buser : input ,
 
-        ARVALID : output,
-        ARREADY : input ,
-        ARADDR  : output,
-        ARSIZE  : output,
-        ARBURST : output,
-        ARCACHE : output,
-        ARPROT  : output,
-        ARID    : output,
-        ARLEN   : output,
-        ARLOCK  : output,
-        ARQOS   : output,
-        ARREGION: output,
-        ARUSER  : output,
+        arvalid : output,
+        arready : input ,
+        araddr  : output,
+        arsize  : output,
+        arburst : output,
+        arcache : output,
+        arprot  : output,
+        arid    : output,
+        arlen   : output,
+        arlock  : output,
+        arqos   : output,
+        arregion: output,
+        aruser  : output,
 
-        RVALID: input ,
-        RREADY: output,
-        RLAST : input ,
-        RDATA : input ,
-        RRESP : input ,
-        RID   : input ,
+        rvalid: input ,
+        rready: output,
+        rlast : input ,
+        rdata : input ,
+        rresp : input ,
+        rid   : input ,
         RUSER : input ,
 
     }
@@ -211,94 +222,167 @@ pub interface axi3_if::<PKG: axi3_prototype> {
 
     import PKG::*;
 
-    ///Write address channel
-    var AWVALID: logic          ;
-    var AWREADY: logic          ;
-    var AWADDR : addr_t         ;
-    var AWSIZE : logic       <3>;
-    var AWBURST: logic       <2>;
-    var AWCACHE: logic       <4>;
-    var AWPROT : logic       <3>;
-    var AWID   : id_t           ;
-    var AWLEN  : num_bursts_t   ; //AXI3: 4 bits, AXI4: 8 bits
-    var AWLOCK : lock_t         ; //AXI3: 2 bits, AXI4: 1 bit
+    //Write address channel
+    var awvalid: logic          ;
+    var awready: logic          ;
+    var awaddr : addr_t         ;
+    var awsize : logic       <3>;
+    var awburst: logic       <2>;
+    var awcache: logic       <4>;
+    var awprot : logic       <3>;
+    var awid   : id_t           ;
+    var awlen  : num_bursts_t   ; //AXI3: 4 bits, AXI4: 8 bits
+    var awlock : lock_t         ; //AXI3: 2 bits, AXI4: 1 bit
 
-    ///Write data channel
-    var WVALID: logic ;
-    var WREADY: logic ;
+    //Write data channel
+    var wvalid: logic ;
+    var wready: logic ;
     var WLAST : logic ;
-    var WDATA : data_t;
-    var WSTRB : strb_t;
+    var wdata : data_t;
+    var wstrb : strb_t;
     var WID   : id_t  ; //Only AXI3
 
-    ///Write response channel
-    var BVALID: logic   ;
-    var BREADY: logic   ;
-    var BRESP : logic<2>;
-    var BID   : id_t    ;
+    //Write response channel
+    var bvalid: logic   ;
+    var bready: logic   ;
+    var bresp : logic<2>;
+    var bid   : id_t    ;
 
-    ///Read address channel
-    var ARVALID: logic          ;
-    var ARREADY: logic          ;
-    var ARADDR : addr_t         ;
-    var ARSIZE : logic       <3>;
-    var ARBURST: logic       <2>;
-    var ARCACHE: logic       <4>;
-    var ARPROT : logic       <3>;
-    var ARID   : id_t           ;
-    var ARLEN  : num_bursts_t   ; //AXI3: 4 bits, AXI4: 8 bits
-    var ARLOCK : lock_t         ; //AXI3: 2 bits, AXI4: 1 bit
+    //Read address channel
+    var arvalid: logic          ;
+    var arready: logic          ;
+    var araddr : addr_t         ;
+    var arsize : logic       <3>;
+    var arburst: logic       <2>;
+    var arcache: logic       <4>;
+    var arprot : logic       <3>;
+    var arid   : id_t           ;
+    var arlen  : num_bursts_t   ; //AXI3: 4 bits, AXI4: 8 bits
+    var arlock : lock_t         ; //AXI3: 2 bits, AXI4: 1 bit
 
-    ///Read data channel
-    var RVALID: logic    ;
-    var RREADY: logic    ;
-    var RLAST : logic    ;
-    var RDATA : data_t   ;
-    var RRESP : logic <2>;
-    var RID   : id_t     ;
+    //Read data channel
+    var rvalid: logic    ;
+    var rready: logic    ;
+    var rlast : logic    ;
+    var rdata : data_t   ;
+    var rresp : logic <2>;
+    var rid   : id_t     ;
 
     modport master {
 
-        AWVALID: output,
-        AWREADY: input ,
-        AWADDR : output,
-        AWSIZE : output,
-        AWBURST: output,
-        AWCACHE: output,
-        AWPROT : output,
-        AWID   : output,
-        AWLEN  : output,
-        AWLOCK : output,
+        awvalid: output,
+        awready: input ,
+        awaddr : output,
+        awsize : output,
+        awburst: output,
+        awcache: output,
+        awprot : output,
+        awid   : output,
+        awlen  : output,
+        awlock : output,
 
-        WVALID: output,
-        WREADY: input ,
+        wvalid: output,
+        wready: input ,
         WLAST : output,
-        WDATA : output,
-        WSTRB : output,
+        wdata : output,
+        wstrb : output,
         WID   : output,
 
-        BVALID: input ,
-        BREADY: output,
-        BRESP : input ,
-        BID   : input ,
+        bvalid: input ,
+        bready: output,
+        bresp : input ,
+        bid   : input ,
 
-        ARVALID: output,
-        ARREADY: input ,
-        ARADDR : output,
-        ARSIZE : output,
-        ARBURST: output,
-        ARCACHE: output,
-        ARPROT : output,
-        ARID   : output,
-        ARLEN  : output,
-        ARLOCK : output,
+        arvalid: output,
+        arready: input ,
+        araddr : output,
+        arsize : output,
+        arburst: output,
+        arcache: output,
+        arprot : output,
+        arid   : output,
+        arlen  : output,
+        arlock : output,
 
-        RVALID: input ,
-        RREADY: output,
-        RLAST : input ,
-        RDATA : input ,
-        RRESP : input ,
-        RID   : input ,
+        rvalid: input ,
+        rready: output,
+        rlast : input ,
+        rdata : input ,
+        rresp : input ,
+        rid   : input ,
+
+    }
+
+    modport slave {
+
+        ..converse(master)
+    }
+
+    modport monitor {
+
+        ..input
+    }
+}
+
+// AXI3 / AXI4 bus interface
+pub interface axi4_lite_if::<PKG: axi4_lite_prototype> {
+
+    import PKG::*;
+
+    //Write address channel
+    var awvalid: logic    ;
+    var awready: logic    ;
+    var awaddr : addr_t   ;
+    var awprot : logic <3>;
+
+    //Write data channel
+    var wvalid: logic ;
+    var wready: logic ;
+    var wdata : data_t;
+    var wstrb : strb_t;
+
+    //Write response channel
+    var bvalid: logic   ;
+    var bready: logic   ;
+    var bresp : logic<2>;
+
+    //Read address channel
+    var arvalid: logic    ;
+    var arready: logic    ;
+    var araddr : addr_t   ;
+    var arprot : logic <3>;
+
+    //Read data channel
+    var rvalid: logic    ;
+    var rready: logic    ;
+    var rdata : data_t   ;
+    var rresp : logic <2>;
+
+    modport master {
+
+        awvalid: output,
+        awready: input ,
+        awaddr : output,
+        awprot : output,
+
+        wvalid: output,
+        wready: input ,
+        wdata : output,
+        wstrb : output,
+
+        bvalid: input ,
+        bready: output,
+        bresp : input ,
+
+        arvalid: output,
+        arready: input ,
+        araddr : output,
+        arprot : output,
+
+        rvalid: input ,
+        rready: output,
+        rdata : input ,
+        rresp : input ,
 
     }
 

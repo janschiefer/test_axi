@@ -1,6 +1,9 @@
 module axi_test () {
 
-    inst v: axi4_if::<axi4_pkg::<32, 4, 1, 8, 8, 8, 8, 8>>;
+    inst a: axi4_if::<axi4_pkg::<32, 4, 1, 8, 8, 8, 8, 8>>;
 
-    inst u: axi3_if::<axi3_pkg::<32, 4, 1>>;
+    inst b: axi3_if::<axi3_pkg::<32, 4, 1>>;
+
+    inst c: axi4_lite_if::<axi4_lite_pkg::<32, 4>>;
+
 }
