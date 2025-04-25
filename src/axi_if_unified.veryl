@@ -1,4 +1,7 @@
 pub proto package axi_prototype_unified {
+
+    const INTERFACE_VERSION: string;
+
     type addr_t      ;
     type data_t      ;
     type strb_t      ;
@@ -14,6 +17,9 @@ pub proto package axi_prototype_unified {
 }
 
 pub package axi4_pkg::<ADDR_W: const, DATA_W_BYTES: const, ID_W: const, AWUSER_W: const, WUSER_W: const, BUSER_W: const, ARUSER_W: const, RUSER_W: const> for axi_prototype_unified {
+
+    const INTERFACE_VERSION: string = "AXI4";
+
     type addr_t       = logic<ADDR_W>            ;
     type data_t       = logic<(DATA_W_BYTES * 8)>;
     type strb_t       = logic<DATA_W_BYTES>      ;
@@ -29,6 +35,9 @@ pub package axi4_pkg::<ADDR_W: const, DATA_W_BYTES: const, ID_W: const, AWUSER_W
 }
 
 pub package axi3_pkg::<ADDR_W: const, DATA_W_BYTES: const, ID_W: const> for axi_prototype_unified {
+
+    const INTERFACE_VERSION: string = "AXI3";
+
     type addr_t       = logic<ADDR_W>            ;
     type data_t       = logic<(DATA_W_BYTES * 8)>;
     type strb_t       = logic<DATA_W_BYTES>      ;
@@ -45,6 +54,9 @@ pub package axi3_pkg::<ADDR_W: const, DATA_W_BYTES: const, ID_W: const> for axi_
 }
 
 pub package axi4_lite_pkg::<ADDR_W: const, DATA_W_BYTES: const> for axi_prototype_unified {
+
+    const INTERFACE_VERSION: string = "AXI4-Lite";
+
     type addr_t = logic<ADDR_W>            ;
     type data_t = logic<(DATA_W_BYTES * 8)>;
     type strb_t = logic<DATA_W_BYTES>      ;
