@@ -316,6 +316,23 @@ pub interface axi4_if::<PKG: axi4_prototype> {
         rdata_ack : import,
 
     }
+
+    modport write_slave {
+
+        awaddr_ack: import,
+        wdata_ack : import,
+        bresp_ack : import,
+
+        ..converse(write_master)
+    }
+
+    modport read_slave {
+
+        araddr_ack: import,
+        rdata_ack : import,
+
+        ..converse(read_master)
+    }
 }
 
 pub interface axi3_if::<PKG: axi3_prototype> {
@@ -517,6 +534,23 @@ pub interface axi3_if::<PKG: axi3_prototype> {
 
     }
 
+    modport write_slave {
+
+        awaddr_ack: import,
+        wdata_ack : import,
+        bresp_ack : import,
+
+        ..converse(write_master)
+    }
+
+    modport read_slave {
+
+        araddr_ack: import,
+        rdata_ack : import,
+
+        ..converse(read_master)
+    }
+
 }
 
 pub interface axi4_lite_if::<PKG: axi4_lite_prototype> {
@@ -665,5 +699,22 @@ pub interface axi4_lite_if::<PKG: axi4_lite_prototype> {
         araddr_ack: import,
         rdata_ack : import,
 
+    }
+
+    modport write_slave {
+
+        awaddr_ack: import,
+        wdata_ack : import,
+        bresp_ack : import,
+
+        ..converse(write_master)
+    }
+
+    modport read_slave {
+
+        araddr_ack: import,
+        rdata_ack : import,
+
+        ..converse(read_master)
     }
 }
