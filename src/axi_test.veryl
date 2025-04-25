@@ -2,13 +2,13 @@ module top (
     clk: input clock_posedge,
 ) {
 
-    inst a: axi4_if::<axi4_pkg::<32, 4, 1, 8, 8, 8, 8, 8>>;
+    inst a: axi_if_unified::<axi4_pkg::<32, 4, 1, 8, 8, 8, 8, 8>>;
 
-    inst b: axi3_if::<axi3_pkg::<32, 4, 1>>;
+    inst b: axi_if_unified::<axi3_pkg::<32, 4, 1>>;
 
-    inst c: axi4_lite_if::<axi4_lite_pkg::<32, 4>>;
+    inst c: axi_if_unified::<axi4_lite_pkg::<32, 4>>;
 
-    inst d: axi4_if::<axi4_pkg::<32, 4, 1, 8, 8, 8, 8, 8>>;
+    inst d: axi_if_unified::<axi4_pkg::<32, 4, 1, 8, 8, 8, 8, 8>>;
 
     var r1: logic;
 
@@ -28,8 +28,8 @@ module top (
 }
 
 module modport_test_module (
-    clk  : input   clock_posedge                                        ,
-    mp_if: modport axi4_if::<axi4_pkg::<32, 4, 1, 8, 8, 8, 8, 8>>::slave,
+    clk  : input   clock_posedge                                               ,
+    mp_if: modport axi_if_unified::<axi4_pkg::<32, 4, 1, 8, 8, 8, 8, 8>>::slave,
 ) {
 
     var r1: logic;
