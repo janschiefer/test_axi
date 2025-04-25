@@ -111,14 +111,14 @@ pub interface axi4_if::<PKG: axi4_prototype> {
     var awid    : id_t           ;
     var awlen   : num_bursts_t   ; //AXI3: 4 bits, AXI4: 8 bits
     var awlock  : lock_t         ; //AXI3: 2 bits, AXI4: 1 bit
-    var AWQOS   : logic       <4>; //Only AXI4
-    var AWREGION: logic       <4>; //Only AXI4
-    var Awuser  : awuser_t       ; //Only AXI4
+    var awqos   : logic       <4>; //Only AXI4
+    var awregion: logic       <4>; //Only AXI4
+    var awuser  : awuser_t       ; //Only AXI4
 
     //Write data channel
     var wvalid: logic  ;
     var wready: logic  ;
-    var WLAST : logic  ;
+    var wlast : logic  ;
     var wdata : data_t ;
     var wstrb : strb_t ;
     var wuser : wuser_t; //Only AXI4
@@ -152,7 +152,27 @@ pub interface axi4_if::<PKG: axi4_prototype> {
     var rdata : data_t    ;
     var rresp : logic  <2>;
     var rid   : id_t      ;
-    var RUSER : ruser_t   ; //Only AXI4
+    var ruser : ruser_t   ; //Only AXI4
+
+    function awaddr_ack () -> logic {
+        return awready && awvalid;
+    }
+
+    function wdata_ack () -> logic {
+        return wready && wvalid;
+    }
+
+    function bresp_ack () -> logic {
+        return bready && bvalid;
+    }
+
+    function araddr_ack () -> logic {
+        return arready && arvalid;
+    }
+
+    function rdata_ack () -> logic {
+        return rready && rvalid;
+    }
 
     modport master {
 
@@ -166,13 +186,13 @@ pub interface axi4_if::<PKG: axi4_prototype> {
         awid    : output,
         awlen   : output,
         awlock  : output,
-        AWQOS   : output,
-        AWREGION: output,
-        Awuser  : output,
+        awqos   : output,
+        awregion: output,
+        awuser  : output,
 
         wvalid: output,
         wready: input ,
-        WLAST : output,
+        wlast : output,
         wdata : output,
         wstrb : output,
         wuser : output,
@@ -203,18 +223,98 @@ pub interface axi4_if::<PKG: axi4_prototype> {
         rdata : input ,
         rresp : input ,
         rid   : input ,
-        RUSER : input ,
+        ruser : input ,
+
+        awaddr_ack: import,
+        wdata_ack : import,
+        bresp_ack : import,
+        araddr_ack: import,
+        rdata_ack : import,
 
     }
 
     modport slave {
+
+        awaddr_ack: import,
+        wdata_ack : import,
+        bresp_ack : import,
+        araddr_ack: import,
+        rdata_ack : import,
 
         ..converse(master)
     }
 
     modport monitor {
 
+        awaddr_ack: import,
+        wdata_ack : import,
+        bresp_ack : import,
+        araddr_ack: import,
+        rdata_ack : import,
+
         ..input
+    }
+
+    modport write_master {
+        awvalid : output,
+        awready : input ,
+        awaddr  : output,
+        awsize  : output,
+        awburst : output,
+        awcache : output,
+        awprot  : output,
+        awid    : output,
+        awlen   : output,
+        awlock  : output,
+        awqos   : output,
+        awregion: output,
+        awuser  : output,
+
+        wvalid: output,
+        wready: input ,
+        wlast : output,
+        wdata : output,
+        wstrb : output,
+        wuser : output,
+
+        bvalid: input ,
+        bready: output,
+        bresp : input ,
+        bid   : input ,
+        buser : input ,
+
+        awaddr_ack: import,
+        wdata_ack : import,
+        bresp_ack : import,
+    }
+
+    modport read_master {
+
+        arvalid : output,
+        arready : input ,
+        araddr  : output,
+        arsize  : output,
+        arburst : output,
+        arcache : output,
+        arprot  : output,
+        arid    : output,
+        arlen   : output,
+        arlock  : output,
+        arqos   : output,
+        arregion: output,
+        aruser  : output,
+
+        rvalid: input ,
+        rready: output,
+        rlast : input ,
+        rdata : input ,
+        rresp : input ,
+        rid   : input ,
+        ruser : input ,
+
+        araddr_ack: import,
+        rdata_ack : import,
+
     }
 }
 
@@ -237,10 +337,10 @@ pub interface axi3_if::<PKG: axi3_prototype> {
     //Write data channel
     var wvalid: logic ;
     var wready: logic ;
-    var WLAST : logic ;
+    var wlast : logic ;
     var wdata : data_t;
     var wstrb : strb_t;
-    var WID   : id_t  ; //Only AXI3
+    var wid   : id_t  ; //Only AXI3
 
     //Write response channel
     var bvalid: logic   ;
@@ -268,6 +368,26 @@ pub interface axi3_if::<PKG: axi3_prototype> {
     var rresp : logic <2>;
     var rid   : id_t     ;
 
+    function awaddr_ack () -> logic {
+        return awready && awvalid;
+    }
+
+    function wdata_ack () -> logic {
+        return wready && wvalid;
+    }
+
+    function bresp_ack () -> logic {
+        return bready && bvalid;
+    }
+
+    function araddr_ack () -> logic {
+        return arready && arvalid;
+    }
+
+    function rdata_ack () -> logic {
+        return rready && rvalid;
+    }
+
     modport master {
 
         awvalid: output,
@@ -283,10 +403,10 @@ pub interface axi3_if::<PKG: axi3_prototype> {
 
         wvalid: output,
         wready: input ,
-        WLAST : output,
+        wlast : output,
         wdata : output,
         wstrb : output,
-        WID   : output,
+        wid   : output,
 
         bvalid: input ,
         bready: output,
@@ -311,17 +431,92 @@ pub interface axi3_if::<PKG: axi3_prototype> {
         rresp : input ,
         rid   : input ,
 
+        awaddr_ack: import,
+        wdata_ack : import,
+        bresp_ack : import,
+        araddr_ack: import,
+        rdata_ack : import,
+
     }
 
     modport slave {
+
+        awaddr_ack: import,
+        wdata_ack : import,
+        bresp_ack : import,
+        araddr_ack: import,
+        rdata_ack : import,
 
         ..converse(master)
     }
 
     modport monitor {
 
+        awaddr_ack: import,
+        wdata_ack : import,
+        bresp_ack : import,
+        araddr_ack: import,
+        rdata_ack : import,
+
         ..input
     }
+
+    modport write_master {
+
+        awvalid: output,
+        awready: input ,
+        awaddr : output,
+        awsize : output,
+        awburst: output,
+        awcache: output,
+        awprot : output,
+        awid   : output,
+        awlen  : output,
+        awlock : output,
+
+        wvalid: output,
+        wready: input ,
+        wlast : output,
+        wdata : output,
+        wstrb : output,
+        wid   : output,
+
+        bvalid: input ,
+        bready: output,
+        bresp : input ,
+        bid   : input ,
+
+        awaddr_ack: import,
+        wdata_ack : import,
+        bresp_ack : import,
+
+    }
+
+    modport read_master {
+
+        arvalid: output,
+        arready: input ,
+        araddr : output,
+        arsize : output,
+        arburst: output,
+        arcache: output,
+        arprot : output,
+        arid   : output,
+        arlen  : output,
+        arlock : output,
+
+        rvalid: input ,
+        rready: output,
+        rlast : input ,
+        rdata : input ,
+        rresp : input ,
+        rid   : input ,
+
+        araddr_ack: import,
+        rdata_ack : import,
+
+    }
+
 }
 
 pub interface axi4_lite_if::<PKG: axi4_lite_prototype> {
@@ -357,6 +552,26 @@ pub interface axi4_lite_if::<PKG: axi4_lite_prototype> {
     var rdata : data_t   ;
     var rresp : logic <2>;
 
+    function awaddr_ack () -> logic {
+        return awready && awvalid;
+    }
+
+    function wdata_ack () -> logic {
+        return wready && wvalid;
+    }
+
+    function bresp_ack () -> logic {
+        return bready && bvalid;
+    }
+
+    function araddr_ack () -> logic {
+        return arready && arvalid;
+    }
+
+    function rdata_ack () -> logic {
+        return rready && rvalid;
+    }
+
     modport master {
 
         awvalid: output,
@@ -383,15 +598,72 @@ pub interface axi4_lite_if::<PKG: axi4_lite_prototype> {
         rdata : input ,
         rresp : input ,
 
+        awaddr_ack: import,
+        wdata_ack : import,
+        bresp_ack : import,
+        araddr_ack: import,
+        rdata_ack : import,
+
     }
 
     modport slave {
+
+        awaddr_ack: import,
+        wdata_ack : import,
+        bresp_ack : import,
+        araddr_ack: import,
+        rdata_ack : import,
 
         ..converse(master)
     }
 
     modport monitor {
 
+        awaddr_ack: import,
+        wdata_ack : import,
+        bresp_ack : import,
+        araddr_ack: import,
+        rdata_ack : import,
+
         ..input
+    }
+
+    modport write_master {
+
+        awvalid: output,
+        awready: input ,
+        awaddr : output,
+        awprot : output,
+
+        wvalid: output,
+        wready: input ,
+        wdata : output,
+        wstrb : output,
+
+        bvalid: input ,
+        bready: output,
+        bresp : input ,
+
+        awaddr_ack: import,
+        wdata_ack : import,
+        bresp_ack : import,
+
+    }
+
+    modport read_master {
+
+        arvalid: output,
+        arready: input ,
+        araddr : output,
+        arprot : output,
+
+        rvalid: input ,
+        rready: output,
+        rdata : input ,
+        rresp : input ,
+
+        araddr_ack: import,
+        rdata_ack : import,
+
     }
 }

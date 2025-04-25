@@ -1,4 +1,6 @@
-module axi_test () {
+module top (
+    clk: input clock_posedge,
+) {
 
     inst a: axi4_if::<axi4_pkg::<32, 4, 1, 8, 8, 8, 8, 8>>;
 
@@ -6,4 +8,67 @@ module axi_test () {
 
     inst c: axi4_lite_if::<axi4_lite_pkg::<32, 4>>;
 
+    inst d: axi4_if::<axi4_pkg::<32, 4, 1, 8, 8, 8, 8, 8>>;
+
+    var r1: logic;
+
+    always_ff {
+        a.awready = ~a.awready;
+        a.awvalid = ~a.awvalid;
+
+        r1 = a.awaddr_ack();
+
+    }
+
+    inst mt: modport_test_module (
+        clk  : clk,
+        mp_if: d  ,
+    );
+
 }
+
+module modport_test_module (
+    clk  : input   clock_posedge                                        ,
+    mp_if: modport axi4_if::<axi4_pkg::<32, 4, 1, 8, 8, 8, 8, 8>>::slave,
+) {
+
+    var r1: logic;
+
+    always_ff {
+        mp_if.awready = ~mp_if.awready;
+
+        r1 = mp_if.awaddr_ack();
+
+    }
+
+}
+
+#[test(test_top)]
+embed (inline) sv{{{
+ 
+    module test_top;
+
+        logic clk;
+
+        initial begin
+            $display($time, " << Starting the Simulation >>");
+            clk = 0;
+        end
+
+
+        initial begin
+            $dumpfile("top.vcd");                // default "dump.vcd"
+            $dumpvars;
+        end
+
+
+        top dut(clk);
+
+        always #10 clk = ~clk;
+
+        initial #100000 $finish;
+
+    endmodule;
+
+
+}}}

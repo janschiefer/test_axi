@@ -6,3 +6,6 @@ version = "0.1.0"
 target = {type = "directory", path = "output"}
 omit_project_prefix = true
 
+[test]
+simulator = "verilator"
+
