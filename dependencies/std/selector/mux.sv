@@ -44,7 +44,7 @@ module std_mux
 
             next_n = (current_n / 2) + (current_n % 2);
             for (int unsigned j = 0; j < next_n; j++) begin
-                logic        select_even;
+                logic select_even;
                 select_even = current_select[2 * j + 0] || ((j + 1) == next_n && (current_n % 2) == 1);
                 if (select_even) begin
                     next_select[j] = current_select[2 * j + 0];

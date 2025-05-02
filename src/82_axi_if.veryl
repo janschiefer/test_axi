@@ -1,0 +1,59 @@
+module Module82A () {
+
+    inst a: axi3_if::<axi3_pkg::<32, 4, 8>>;
+
+    inst b: axi4_if::<axi4_pkg::<32, 4, 8, 8, 8, 8, 8, 8>>;
+
+    inst c: axi4_lite_if::<axi4_lite_pkg::<32, 4, 8>>;
+
+    var r: logic<15>;
+
+    always_comb {
+        r[0]  = a.awaddr_ack();
+        r[1]  = a.wdata_ack();
+        r[2]  = a.bresp_ack();
+        r[3]  = a.awaddr_ack();
+        r[4]  = a.wdata_ack();
+        r[5]  = b.awaddr_ack();
+        r[6]  = b.wdata_ack();
+        r[7]  = b.bresp_ack();
+        r[8]  = b.awaddr_ack();
+        r[9]  = b.wdata_ack();
+        r[10] = c.awaddr_ack();
+        r[11] = c.wdata_ack();
+        r[12] = c.bresp_ack();
+        r[13] = c.awaddr_ack();
+        r[14] = c.wdata_ack();
+
+        b.awsize  = axi4_config::axsize_variants::bytes_per_transfer_4;
+        b.awburst = axi4_config::axburst_variants::fixed_burst;
+
+        b.awcache = 4'b0000 | axi4_config::awcache_bufferable;
+
+    }
+
+    inst d: Module82B (
+        axi: a,
+    );
+
+    inst e: Module82C (
+        axi: a,
+    );
+
+    inst f: Module82D (
+        axi: c,
+    );
+
+}
+
+module Module82B (
+    axi: modport axi3_if::<axi3_pkg::<32, 4, 8>>::slave,
+) {}
+
+module Module82C (
+    axi: modport axi4_if::<axi4_pkg::<32, 4, 8, 8, 8, 8, 8, 8>>::master,
+) {}
+
+module Module82D (
+    axi: modport axi4_lite_if::<axi4_lite_pkg::<32, 4, 8>>::monitor,
+) {}
